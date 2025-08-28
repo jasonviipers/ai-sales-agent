@@ -1,8 +1,9 @@
-import { drizzle } from "drizzle-orm/libsql";
-import { createClient } from "@libsql/client";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { config } from "@/config";
+import { Pool } from "pg";
 
-const client = createClient({
-	url: process.env.DATABASE_URL || "",
+const pool = new Pool({
+	connectionString: config.database.url,
 });
 
-export const db = drizzle({ client });
+export const db = drizzle(pool);
