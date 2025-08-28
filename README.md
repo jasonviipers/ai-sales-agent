@@ -1,21 +1,18 @@
-# sales-agent-app
-
-This project was created with [Better-T-Stack](https://github.com/AmanVarshney01/create-better-t-stack), a modern TypeScript stack that combines Next.js, Elysia, ORPC, and more.
-
 ## Features
 
+### Technical Stack
 - **TypeScript** - For type safety and improved developer experience
 - **Next.js** - Full-stack React framework
 - **TailwindCSS** - Utility-first CSS for rapid UI development
 - **shadcn/ui** - Reusable UI components
-- **Elysia** - Type-safe, high-performance framework
+- **Hono** - Lightweight, performant server framework
 - **oRPC** - End-to-end type-safe APIs with OpenAPI integration
-- **Bun** - Runtime environment
+- **workers** - Runtime environment
 - **Drizzle** - TypeScript-first ORM
-- **SQLite/Turso** - Database engine
+- **PostgreSQL** - Database engine
 - **Authentication** - Email & password authentication with Better Auth
-- **Biome** - Linting and formatting
 - **Turborepo** - Optimized monorepo build system
+
 
 ## Getting Started
 
@@ -50,9 +47,6 @@ bun dev
 
 Open [http://localhost:3001](http://localhost:3001) in your browser to see the web application.
 The API is running at [http://localhost:3000](http://localhost:3000).
-
-
-
 
 
 ## Project Structure
