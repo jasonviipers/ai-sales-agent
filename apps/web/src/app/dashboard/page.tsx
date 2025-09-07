@@ -1,7 +1,7 @@
 "use client";
 import { authClient } from "@/lib/auth-client";
 import { useQuery } from "@tanstack/react-query";
-import { orpc } from "@/utils/orpc";
+import { orpc } from "@/lib/orpc";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 

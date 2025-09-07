@@ -5,9 +5,9 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { AuthUIProvider } from "@daveyplate/better-auth-ui"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { queryClient } from "@/utils/orpc";
+import { queryClient } from "@/lib/orpc";
 import { ThemeProvider } from "./theme-provider";
-import { Toaster } from "../components/ui/sonner";
+import { Toaster } from "ui/components/ui/sonner";
 import { authClient } from "@/lib/auth-client"
 
 export default function Providers({ children }: { children: React.ReactNode }) {
@@ -39,7 +39,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
 					{children}
 					<ReactQueryDevtools />
 				</QueryClientProvider>
-				<Toaster richColors />
+				<Toaster />
 			</AuthUIProvider>
 		</ThemeProvider>
 	);
