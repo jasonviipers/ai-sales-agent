@@ -9,7 +9,8 @@ import {
     BreadcrumbList,
     BreadcrumbPage,
     BreadcrumbSeparator
-} from "@/components/ui/breadcrumb"
+} from "ui/components/breadcrumb"
+import type { Route } from "next"
 
 interface BreadcrumbSegment {
     label: string
@@ -102,7 +103,7 @@ export function DynamicBreadcrumb() {
                                 <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
                             ) : (
                                 <BreadcrumbLink asChild>
-                                    <Link href={crumb.href}>{crumb.label}</Link>
+                                    <Link href={crumb.href as Route}>{crumb.label}</Link>
                                 </BreadcrumbLink>
                             )}
                         </BreadcrumbItem>

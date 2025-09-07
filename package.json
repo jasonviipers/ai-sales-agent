@@ -13,10 +13,10 @@
 		"dev:native": "turbo -F native dev",
 		"dev:web": "turbo -F web dev",
 		"dev:server": "turbo -F server dev",
-		"db:push": "turbo -F server db:push",
-		"db:studio": "turbo -F server db:studio",
-		"db:generate": "turbo -F server db:generate",
-		"db:migrate": "turbo -F server db:migrate"
+		"db:push": "turbo run db:push --filter=database",
+		"db:studio": "turbo run db:studio --filter=database",
+		"db:generate": "turbo run db:generate --filter=database",
+		"db:migrate": "turbo run db:migrate --filter=database"
 	},
 	"dependencies": {},
 	"devDependencies": {

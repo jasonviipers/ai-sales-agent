@@ -1,9 +1,9 @@
 "use client";
-import { authClient } from "@/lib/auth-client";
 import { useQuery } from "@tanstack/react-query";
-import { orpc } from "@/lib/orpc";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { authClient } from "@/lib/auth-client";
+import { orpc } from "@/lib/orpc";
 
 export default function Dashboard() {
 	const router = useRouter();
@@ -13,7 +13,7 @@ export default function Dashboard() {
 
 	useEffect(() => {
 		if (!session && !isPending) {
-			router.push("/login");
+			router.push("/");
 		}
 	}, [session, isPending]);
 

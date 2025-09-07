@@ -24,8 +24,9 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem
-} from "@/components/ui/sidebar"
-import { site } from "@/lib/site"
+} from "ui/components/sidebar"
+import type { Route } from "next"
+// import { site } from "@/lib/site"
 
 const data = {
     navMain: [
@@ -51,7 +52,7 @@ function SidebarLogo() {
                 className="group/logo inline-flex items-center gap-2 transition-all duration-300 ease-out"
                 href="/dashboard"
             >
-                <span className="sr-only">{site.name}</span>
+                {/* <span className="sr-only">{site.name}</span>
                 <Image
                     src={site.logo}
                     alt={site.name}
@@ -61,7 +62,7 @@ function SidebarLogo() {
                 />
                 <span className="group-data-[collapsible=icon]:-ml-2 truncate font-bold text-lg transition-[margin,opacity,transform,width] duration-300 ease-out group-data-[collapsible=icon]:w-0 group-data-[collapsible=icon]:scale-95 group-data-[collapsible=icon]:opacity-0">
                     {site.name}
-                </span>
+                </span> */}
             </Link>
         </div>
     )
@@ -95,7 +96,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                                                 isActive={isActive}
                                             >
                                                 <Link
-                                                    href={item.url}
+                                                    href={item.url as Route}
                                                     className="flex items-center gap-3"
                                                 >
                                                     {item.icon && (

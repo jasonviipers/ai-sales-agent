@@ -1,0 +1,31 @@
+{
+  "name": "database",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.15.5",
+    "@types/bun": "latest",
+    "drizzle-kit": "^0.31.4"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "pg": "^8.14.1",
+    "drizzle-orm": "^0.44.5"
+  },
+  "exports": {
+    ".": "./src/*.ts",
+    "./schema": "./src/schema/*",
+    "./auth": "./src/schema/auth.ts",
+    "./migrations": "./migrations",
+    "./db": "./src/index.ts"
+  }
+}

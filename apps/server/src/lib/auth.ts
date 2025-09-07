@@ -6,9 +6,9 @@ import { EmailTemplate } from "@daveyplate/better-auth-ui/server"
 import { stripe } from "@better-auth/stripe"
 import Stripe from "stripe"
 import { Resend } from "resend"
-import { db } from "@/db";
-import * as schema from "@/db/schema/auth";
 import { config } from "@/config";
+import { db } from 'database/db'
+import * as schema from 'database/auth'
 
 const stripeClient = new Stripe(config.stripe.secretKey, {
 	apiVersion: "2025-08-27.basil",
