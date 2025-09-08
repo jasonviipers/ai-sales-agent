@@ -6,7 +6,6 @@ import { queryClient } from "@/lib/orpc";
 import { Toaster } from "@workspace/ui/components/sonner";
 import { ThemeProvider } from "./theme-provider";
 
-
 export default function QueryProvider({
   children,
 }: {

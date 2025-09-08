@@ -1,17 +1,42 @@
 {
 	"$schema": "https://turbo.build/schema.json",
 	"ui": "tui",
+	"globalEnv": [
+		"DATABASE_URL",
+		"GOOGLE_CLIENT_ID",
+		"GOOGLE_CLIENT_SECRET",
+		"GITHUB_CLIENT_ID",
+		"GITHUB_CLIENT_SECRET",
+		"BETTER_AUTH_SECRET",
+		"BETTER_AUTH_URL",
+		"STRIPE_SECRET_KEY",
+		"STRIPE_WEBHOOK_SECRET",
+		"OPEN_ROUTER_API_KEY",
+		"RESEND_API_KEY",
+		"AI_MODEL_NAME"
+	],
 	"tasks": {
 		"build": {
-			"dependsOn": ["^build"],
-			"inputs": ["$TURBO_DEFAULT$", ".env*"],
-			"outputs": ["dist/**"]
+			"dependsOn": [
+				"^build"
+			],
+			"inputs": [
+				"$TURBO_DEFAULT$",
+				".env*"
+			],
+			"outputs": [
+				"dist/**"
+			]
 		},
 		"lint": {
-			"dependsOn": ["^lint"]
+			"dependsOn": [
+				"^lint"
+			]
 		},
 		"check-types": {
-			"dependsOn": ["^check-types"]
+			"dependsOn": [
+				"^check-types"
+			]
 		},
 		"dev": {
 			"cache": false,

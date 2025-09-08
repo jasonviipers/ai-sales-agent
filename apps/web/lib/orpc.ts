@@ -7,36 +7,36 @@ import type { AppRouterClient } from "../../server/src/routers";
 import { toast } from "sonner";
 
 export const queryClient = new QueryClient({
-	queryCache: new QueryCache({
-		onError: (error) => {
-			toast.error(`Error: ${error.message}`, {
-				action: {
-					label: "retry",
-					onClick: () => {
-						queryClient.invalidateQueries();
-					},
-				},
-			});
-		},
-	}),
+  queryCache: new QueryCache({
+    onError: (error) => {
+      toast.error(`Error: ${error.message}`, {
+        action: {
+          label: "retry",
+          onClick: () => {
+            queryClient.invalidateQueries();
+          },
+        },
+      });
+    },
+  }),
 });
 
 export const link = new RPCLink({
-	url: `${process.env.NEXT_PUBLIC_SERVER_URL}/rpc`,
-	fetch(url, options) {
-		return fetch(url, {
-			...options,
-			credentials: "include",
-		});
-	},
-	headers: async () => {
-		if (typeof window !== "undefined") {
-			return {};
-		}
+  url: `${process.env.NEXT_PUBLIC_SERVER_URL}/rpc`,
+  fetch(url, options) {
+    return fetch(url, {
+      ...options,
+      credentials: "include",
+    });
+  },
+  headers: async () => {
+    if (typeof window !== "undefined") {
+      return {};
+    }
 
-		const { headers } = await import("next/headers");
-		return Object.fromEntries(await headers());
-	},
+    const { headers } = await import("next/headers");
+    return Object.fromEntries(await headers());
+  },
 });
 
 export const client: AppRouterClient = createORPCClient(link);

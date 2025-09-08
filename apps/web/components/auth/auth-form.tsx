@@ -12,7 +12,11 @@ import { Input } from "@workspace/ui/components/input";
 import { Button } from "@workspace/ui/components/button";
 import { Badge } from "@workspace/ui/components/badge";
 import { GitHub, Google } from "../icons/icons";
-import { AUTH_BUTTON_TEXT, AUTH_ERROR_MESSAGES, LOADING_MESSAGES } from "@/lib/constants";
+import {
+  AUTH_BUTTON_TEXT,
+  AUTH_ERROR_MESSAGES,
+  LOADING_MESSAGES,
+} from "@/lib/constants";
 
 // Types
 interface AuthError {
@@ -82,9 +86,8 @@ export function AuthForm({
       if ("code" in error && typeof error.code === "string") {
         errorCode = error.code;
         errorMessage =
-          AUTH_ERROR_MESSAGES[
-          error.code as keyof typeof AUTH_ERROR_MESSAGES
-          ] || errorMessage;
+          AUTH_ERROR_MESSAGES[error.code as keyof typeof AUTH_ERROR_MESSAGES] ||
+          errorMessage;
       } else if ("message" in error && typeof error.message === "string") {
         errorMessage = error.message;
       }
@@ -147,8 +150,8 @@ export function AuthForm({
         const result = await signIn.magicLink(
           { email: trimmedEmail },
           {
-            onRequest: () => { },
-            onResponse: () => { },
+            onRequest: () => {},
+            onResponse: () => {},
             onError: handleAuthError,
           },
         );
@@ -215,7 +218,10 @@ export function AuthForm({
 
   const renderLastUsedBadge = useCallback(
     (method: LastUsedMethod) => {
-      if (lastMethod === method || (method === "email" && lastMethod === "email")) {
+      if (
+        lastMethod === method ||
+        (method === "email" && lastMethod === "email")
+      ) {
         return (
           <Badge
             variant="lastUsed"
@@ -269,9 +275,13 @@ export function AuthForm({
                 autoCorrect="off"
                 spellCheck={false}
                 disabled={isPending}
-                className={emailError ? "border-red-500 focus:border-red-500" : ""}
+                className={
+                  emailError ? "border-red-500 focus:border-red-500" : ""
+                }
                 aria-invalid={!!emailError}
-                aria-describedby={emailError ? "email-error email-hint" : "email-hint"}
+                aria-describedby={
+                  emailError ? "email-error email-hint" : "email-hint"
+                }
               />
               <p id="email-hint" className="text-sm text-muted-foreground">
                 We'll receive a secure link to sign in

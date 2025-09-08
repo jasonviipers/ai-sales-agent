@@ -82,4 +82,3 @@ flowchart TD
 
 - **Type Safety**: End-to-end type safety via orpc and Drizzle ORM
 - **Local/Remote Dual Mode**: PGLite enables user data
-

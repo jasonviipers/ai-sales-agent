@@ -14,6 +14,7 @@ tags:
 - **CSS-first configuration**: Configuration is now done in CSS instead of JavaScript
   - Use `@theme` directive in CSS instead of `tailwind.config.js`
   - Example:
+
     ```css
     @import "tailwindcss";
 
@@ -24,6 +25,7 @@ tags:
       --ease-fluid: cubic-bezier(0.3, 0, 0, 1);
     }
     ```
+
 - Legacy `tailwind.config.js` files can still be imported using the `@config` directive:
   ```css
   @import "tailwindcss";
@@ -65,7 +67,6 @@ tags:
     - `--aspect-*` : Aspect ratio utilities like `aspect-video`
     - `--ease-*` : Transition timing function utilities like `ease-out`
     - `--animate-*` : Animation utilities like `animate-spin`
-  
 
 - **Simplified theme configuration**: Many utilities no longer need theme configuration
   - Utilities like `grid-cols-12`, `z-40`, and `opacity-70` work without configuration
@@ -78,7 +79,6 @@ tags:
 - **Overriding theme namespaces**:
   - Override entire namespace: `--font-*: initial;`
   - Override entire theme: `--*: initial;`
-
 
 ## New Features
 
@@ -128,6 +128,7 @@ tags:
 ## Custom Extensions
 
 - **Custom utilities**: Use `@utility` directive
+
   ```css
   @utility tab-4 {
     tab-size: 4;
@@ -135,6 +136,7 @@ tags:
   ```
 
 - **Custom variants**: Use `@variant` directive
+
   ```css
   @variant pointer-coarse (@media (pointer: coarse));
   @variant theme-midnight (&:where([data-theme="midnight"] *));
@@ -168,14 +170,16 @@ tags:
 - **Syntax changes**:
   - CSS variables in arbitrary values: `bg-(--brand-color)` instead of `bg-[--brand-color]`
   - Stacked variants now apply left-to-right (not right-to-left)
-  - Use CSS variables instead of `theme()` function 
+  - Use CSS variables instead of `theme()` function
 
 ## Advanced Configuration
 
 - **Using a prefix**:
+
   ```css
   @import "tailwindcss" prefix(tw);
   ```
+
   - Results in classes like `tw:flex`, `tw:bg-red-500`, `tw:hover:bg-red-600`
 
 - **Source detection**:
@@ -184,18 +188,21 @@ tags:
   - Disable automatic detection: `@import "tailwindcss" source(none);`
 
 - **Legacy config files**:
+
   ```css
   @import "tailwindcss";
   @config "../../tailwind.config.js";
   ```
 
 - **Dark mode configuration**:
+
   ```css
   @import "tailwindcss";
   @variant dark (&:where(.dark, .dark *));
   ```
 
 - **Container customization**: Extend with `@utility`
+
   ```css
   @utility container {
     margin-inline: auto;
@@ -209,7 +216,7 @@ tags:
     @import "../../my-theme.css" theme(reference);
     /* or */
     @import "tailwindcss/theme" theme(reference);
-    
+
     h1 {
       @apply font-bold text-2xl text-red-500;
     }
