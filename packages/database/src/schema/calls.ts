@@ -21,10 +21,10 @@ export const calls = pgTable('calls', {
     }>(),
     startedAt: timestamp("started_at").defaultNow().notNull(),
     endedAt: timestamp("ended_at"),
-    scriptId: text('script_id').references(() => scripts.id).notNull(),
+    scriptId: text('script_id').references(() => scripts.id, { onDelete: 'restrict', onUpdate: 'cascade' }).notNull(),
     startedBy: text("started_by").references(() => user.id).notNull(),
     leadId: text('lead_id').references(() => leads.id).notNull(),
-    organizationId: text('organization_id').references(() => organization.id).notNull(),
+    organizationId: text('organization_id') .references(() => organization.id, { onDelete: 'restrict', onUpdate: 'cascade' }).notNull(),
     status: text('status').$type<'connecting' | 'connected' | 'in_progress' | 'completed' | 'failed' | 'cancelled'>().default('connecting').notNull(),
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at')
