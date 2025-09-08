@@ -20,9 +20,9 @@ sales-agent-app/
 │   │   │   └── styles/      # Global TailwindCSS styles
 │   │   └── package.json
 │   │
-│   └── server/              # Main API Server (Hono + oRPC)
+│   └── server/              # Main API Server (Elysia + oRPC)
 │       ├── src/
-│       │   ├── lib/         # Database client (Drizzle), Hono app instance
+│       │   ├── lib/         # Database client (Drizzle), Elysia app instance
 │       │   ├── modules/     # Feature-based modules (Auth, Users, Agents, Calls, Leads)
 │       │   ├── routes/      # HTTP Routes (if not purely oRPC)
 │       │   └── index.ts     # Server entry point
@@ -58,7 +58,7 @@ sales-agent-app/
 ```mermaid
 flowchart TD
     A[User: Start Call] --> B[Web: oRPC call.start]
-    B --> C[Hono Server]
+    B --> C[Elysia Server]
     C --> D[Create DB Record]
     C --> E[Initiate Call via Twilio]
     E --> F[Twilio Calls Lead]
