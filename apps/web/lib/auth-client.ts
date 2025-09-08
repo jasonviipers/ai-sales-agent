@@ -4,7 +4,7 @@ import { createAuthClient } from "better-auth/react";
 import { env } from "@workspace/env/client"
 
 export const authClient = createAuthClient({
-	baseURL: env.PUBLIC_NEXT_PUBLIC_SERVER_URL,
+	baseURL: env.NEXT_PUBLIC_SERVER_URL,
 	plugins: [
 		passkeyClient(),
 		magicLinkClient(),

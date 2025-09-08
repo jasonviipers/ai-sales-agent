@@ -1,6 +1,7 @@
+import "@workspace/ui/globals.css"
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import "@workspace/ui/globals.css"
+import QueryProvider from "@/providers/query-provider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -24,7 +25,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        {children}
+        <QueryProvider>
+          {children}
+        </QueryProvider>
       </body>
     </html>
   );

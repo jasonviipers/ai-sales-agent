@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { AlertCircle, Key, Loader2 } from "lucide-react";
 import { IconRobot } from "@tabler/icons-react";
 import { getLastUsedLoginMethod, signIn } from "@/lib/auth-client";
@@ -12,20 +12,47 @@ import { Input } from "@workspace/ui/components/input";
 import { Button } from "@workspace/ui/components/button";
 import { Badge } from "@workspace/ui/components/badge";
 import { GitHub, Google } from "../icons/icons";
+import { AUTH_BUTTON_TEXT, AUTH_ERROR_MESSAGES, LOADING_MESSAGES } from "@/lib/constants";
 
-
+// Types
 interface AuthError {
   message: string;
   code?: string;
 }
 
-type LoginMethod = "magicLink" | "passkey" | "github" | "google";
+type SocialProvider = "github" | "google";
+type AuthMethod = "magicLink" | "passkey" | SocialProvider;
+type LastUsedMethod = "email" | "passkey" | SocialProvider;
 
 interface LoginFormProps extends React.ComponentProps<"div"> {
   callbackURL?: string;
 }
 
-export function LoginForm({
+// Custom hook with proper cleanup
+const useDebounce = (callback: (...args: any[]) => void, delay: number) => {
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
+  return useCallback(
+    (...args: any[]) => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      timeoutRef.current = setTimeout(() => callback(...args), delay);
+    },
+    [callback, delay],
+  );
+};
+
+export function AuthForm({
   className,
   callbackURL = "/dashboard",
   ...props
@@ -34,32 +61,42 @@ export function LoginForm({
   const [emailError, setEmailError] = useState("");
   const [authError, setAuthError] = useState<AuthError | null>(null);
   const [isPending, startTransition] = useTransition();
-  const [currentMethod, setCurrentMethod] = useState<LoginMethod | null>(null);
-  const [lastMethod, setLastMethod] = useState<string | null>(null);
+  const [currentMethod, setCurrentMethod] = useState<AuthMethod | null>(null);
+  const [lastMethod, setLastMethod] = useState<LastUsedMethod | null>(null);
 
   const formRef = useRef<HTMLFormElement>(null);
   const emailInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    setLastMethod(getLastUsedLoginMethod())
-  }, [])
+    const lastUsedMethod = getLastUsedLoginMethod();
+    setLastMethod(lastUsedMethod as LastUsedMethod);
+  }, []);
 
-  const handleAuthError = (error: unknown) => {
+  const handleAuthError = useCallback((error: unknown) => {
     console.error("Authentication error:", error);
-    const errorMessage =
-      error instanceof Error
-        ? error.message
-        : "An error occurred during sign in. Please try again.";
+
+    let errorMessage = "An error occurred during sign in. Please try again.";
+    let errorCode: string | undefined;
+
+    if (error && typeof error === "object") {
+      if ("code" in error && typeof error.code === "string") {
+        errorCode = error.code;
+        errorMessage =
+          AUTH_ERROR_MESSAGES[
+          error.code as keyof typeof AUTH_ERROR_MESSAGES
+          ] || errorMessage;
+      } else if ("message" in error && typeof error.message === "string") {
+        errorMessage = error.message;
+      }
+    }
 
     setAuthError({
       message: errorMessage,
-      code: typeof error === "object" && error !== null && "code" in error
-        ? String(error.code)
-        : undefined,
+      code: errorCode,
     });
-  };
+  }, []);
 
-  const validateEmail = (emailValue: string): boolean => {
+  const validateEmail = useCallback((emailValue: string): boolean => {
     try {
       emailSchema.parse(emailValue);
       setEmailError("");
@@ -72,17 +109,32 @@ export function LoginForm({
       }
       return false;
     }
-  };
+  }, []);
 
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target;
-    setEmail(value);
-    if (emailError) setEmailError("");
-    if (authError) setAuthError(null);
-  };
+  const debouncedValidation = useDebounce((email: string) => {
+    if (email.trim()) {
+      validateEmail(email);
+    }
+  }, 300);
 
-  const handleMagicLinkSignIn = async () => {
-    if (!validateEmail(email)) {
+  const handleEmailChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      setEmail(value);
+
+      // Clear errors immediately
+      if (emailError) setEmailError("");
+      if (authError) setAuthError(null);
+
+      // Debounced validation for better UX
+      debouncedValidation(value);
+    },
+    [emailError, authError, debouncedValidation],
+  );
+
+  const handleMagicLinkSignIn = useCallback(async () => {
+    const trimmedEmail = email.trim();
+    if (!validateEmail(trimmedEmail)) {
       emailInputRef.current?.focus();
       return;
     }
@@ -93,7 +145,7 @@ export function LoginForm({
     startTransition(async () => {
       try {
         const result = await signIn.magicLink(
-          { email },
+          { email: trimmedEmail },
           {
             onRequest: () => { },
             onResponse: () => { },
@@ -110,9 +162,9 @@ export function LoginForm({
         setCurrentMethod(null);
       }
     });
-  };
+  }, [email, validateEmail, handleAuthError]);
 
-  const handlePasskeySignIn = async () => {
+  const handlePasskeySignIn = useCallback(async () => {
     setAuthError(null);
     setCurrentMethod("passkey");
 
@@ -125,49 +177,64 @@ export function LoginForm({
         setCurrentMethod(null);
       }
     });
-  };
+  }, [handleAuthError]);
 
-  const handleSocialSignIn = async (provider: LoginMethod) => {
-    setAuthError(null);
-    setCurrentMethod(provider);
+  const handleSocialSignIn = useCallback(
+    async (provider: SocialProvider) => {
+      setAuthError(null);
+      setCurrentMethod(provider);
 
-    startTransition(async () => {
-      try {
-        await signIn.social({
-          provider,
-          callbackURL,
-        });
-      } catch (error) {
-        handleAuthError(error);
-      } finally {
-        setCurrentMethod(null);
+      startTransition(async () => {
+        try {
+          await signIn.social({
+            provider,
+            callbackURL,
+          });
+        } catch (error) {
+          handleAuthError(error);
+        } finally {
+          setCurrentMethod(null);
+        }
+      });
+    },
+    [callbackURL, handleAuthError],
+  );
+
+  const handleFormSubmit = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
+      handleMagicLinkSignIn();
+    },
+    [handleMagicLinkSignIn],
+  );
+
+  const isLoading = useCallback(
+    (method: AuthMethod) => isPending && currentMethod === method,
+    [isPending, currentMethod],
+  );
+
+  const renderLastUsedBadge = useCallback(
+    (method: LastUsedMethod) => {
+      if (lastMethod === method || (method === "email" && lastMethod === "email")) {
+        return (
+          <Badge
+            variant="lastUsed"
+            className="absolute -right-1 -top-1 text-xs"
+          >
+            Last used
+          </Badge>
+        );
       }
-    });
-  };
-
-  const handleGithubSignIn = () => {
-    handleSocialSignIn("github").catch((error) => {
-      console.error("Github sign-in failed:", error);
-    });
-  };
-
-  const handleGoogleSignIn = () => {
-    handleSocialSignIn("google").catch((error) => {
-      console.error("Google sign-in failed:", error);
-    });
-  };
-
-  const handleFormSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    handleMagicLinkSignIn();
-  };
-
-  const isLoading = (method: LoginMethod) => isPending && currentMethod === method;
+      return null;
+    },
+    [lastMethod],
+  );
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <form ref={formRef} onSubmit={handleMagicLinkSignIn} noValidate>
+      <form ref={formRef} onSubmit={handleFormSubmit} noValidate>
         <div className="flex flex-col gap-6">
+          {/* Header */}
           <div className="flex flex-col items-center gap-2">
             <div className="flex flex-col items-center gap-2 font-medium">
               <div className="flex size-8 items-center justify-center rounded-md">
@@ -176,6 +243,7 @@ export function LoginForm({
             </div>
           </div>
 
+          {/* Error Display */}
           {authError && (
             <Alert variant="destructive" role="alert">
               <AlertCircle className="size-4" />
@@ -183,6 +251,7 @@ export function LoginForm({
             </Alert>
           )}
 
+          {/* Email Form */}
           <div className="flex flex-col gap-6">
             <div className="grid gap-3">
               <Label htmlFor="email">Email</Label>
@@ -195,11 +264,18 @@ export function LoginForm({
                 placeholder="m@example.com"
                 required
                 autoComplete="email"
+                inputMode="email"
+                autoCapitalize="none"
+                autoCorrect="off"
+                spellCheck={false}
                 disabled={isPending}
                 className={emailError ? "border-red-500 focus:border-red-500" : ""}
                 aria-invalid={!!emailError}
-                aria-describedby={emailError ? "email-error" : undefined}
+                aria-describedby={emailError ? "email-error email-hint" : "email-hint"}
               />
+              <p id="email-hint" className="text-sm text-muted-foreground">
+                We'll receive a secure link to sign in
+              </p>
               {emailError && (
                 <p
                   id="email-error"
@@ -211,58 +287,54 @@ export function LoginForm({
               )}
             </div>
 
+            {/* Magic Link Button */}
             <Button
               type="submit"
               disabled={isPending}
               className="relative w-full bg-green-700 hover:bg-green-800"
+              aria-describedby="magic-link-description"
             >
-              {isLoading('magicLink') ? (
+              {isLoading("magicLink") ? (
                 <>
                   <Loader2 size={16} className="mr-2 animate-spin" />
-                  Sending magic link...
+                  {LOADING_MESSAGES.magicLink}
                 </>
               ) : (
                 <>
-                  Sign in with Magic Link
-                  {lastMethod === "email" && (
-                    <Badge
-                      variant="secondary"
-                      className="absolute -right-1 -top-1 text-xs"
-                    >
-                      Last used
-                    </Badge>
-                  )}
+                  {AUTH_BUTTON_TEXT.magicLink}
+                  {renderLastUsedBadge("email")}
                 </>
               )}
             </Button>
+            <p id="magic-link-description" className="sr-only">
+              Sign in with a secure link sent to your email
+            </p>
 
+            {/* Passkey Button */}
             <Button
               variant="outline"
               type="button"
               className="relative w-full"
               onClick={handlePasskeySignIn}
               disabled={isPending}
+              aria-describedby="passkey-description"
             >
-              {isLoading('passkey') ? (
+              {isLoading("passkey") ? (
                 <>
                   <Loader2 size={16} className="mr-2 animate-spin" />
-                  Authenticating...
+                  {LOADING_MESSAGES.passkey}
                 </>
               ) : (
                 <>
                   <Key className="mr-2 size-4" />
-                  Sign in with Passkey
-                  {lastMethod === "passkey" && (
-                    <Badge
-                      variant="secondary"
-                      className="absolute -right-1 -top-1 text-xs"
-                    >
-                      Last used
-                    </Badge>
-                  )}
+                  {AUTH_BUTTON_TEXT.passkey}
+                  {renderLastUsedBadge("passkey")}
                 </>
               )}
             </Button>
+            <p id="passkey-description" className="sr-only">
+              Sign in using biometric authentication or security key
+            </p>
           </div>
 
           {/* Divider */}
@@ -272,68 +344,62 @@ export function LoginForm({
             </span>
           </div>
 
+          {/* Social Buttons */}
           <div className="grid gap-4 sm:grid-cols-2">
             <Button
               variant="outline"
               type="button"
               className="relative w-full"
-              onClick={handleGithubSignIn}
+              onClick={() => handleSocialSignIn("github")}
               disabled={isPending}
-              aria-label="Sign in with Github"
+              aria-describedby="github-description"
             >
-              {isLoading('github') ? (
+              {isLoading("github") ? (
                 <>
                   <Loader2 size={16} className="mr-2 animate-spin" />
-                  Connecting...
+                  {LOADING_MESSAGES.github}
                 </>
               ) : (
                 <>
                   <GitHub className="mr-2 size-5" />
-                  Github
-                  {lastMethod === "github" && (
-                    <Badge
-                      variant="secondary"
-                      className="absolute -right-1 -top-1 text-xs"
-                    >
-                      Last used
-                    </Badge>
-                  )}
+                  {AUTH_BUTTON_TEXT.github}
+                  {renderLastUsedBadge("github")}
                 </>
               )}
             </Button>
+            <p id="github-description" className="sr-only">
+              Sign in with your GitHub account
+            </p>
 
             <Button
               variant="outline"
               type="button"
               className="relative w-full"
-              onClick={handleGoogleSignIn}
+              onClick={() => handleSocialSignIn("google")}
               disabled={isPending}
-              aria-label="Sign in with Google"
+              aria-describedby="google-description"
             >
-              {isLoading('google') ? (
+              {isLoading("google") ? (
                 <>
                   <Loader2 size={16} className="mr-2 animate-spin" />
-                  Connecting...
+                  {LOADING_MESSAGES.google}
                 </>
               ) : (
                 <>
                   <Google className="mr-2 size-5" />
-                  Google
-                  {lastMethod === "google" && (
-                    <Badge
-                      variant="secondary"
-                      className="absolute -right-1 -top-1 text-xs"
-                    >
-                      Last used
-                    </Badge>
-                  )}
+                  {AUTH_BUTTON_TEXT.google}
+                  {renderLastUsedBadge("google")}
                 </>
               )}
             </Button>
+            <p id="google-description" className="sr-only">
+              Sign in with your Google account
+            </p>
           </div>
         </div>
       </form>
 
+      {/* Terms */}
       <div className="text-balance text-center text-xs text-muted-foreground">
         By continuing, you agree to our{" "}
         <a
