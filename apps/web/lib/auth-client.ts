@@ -1,5 +1,5 @@
 import { stripeClient } from "@better-auth/stripe/client";
-import { magicLinkClient, passkeyClient, organizationClient } from "better-auth/client/plugins";
+import { magicLinkClient, passkeyClient, organizationClient, lastLoginMethodClient } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 import { env } from "@workspace/env/client"
 
@@ -11,8 +11,9 @@ export const authClient = createAuthClient({
 		stripeClient({
 			subscription: false,
 		}),
-		organizationClient()
+		organizationClient(),
+		lastLoginMethodClient()
 	],
 });
 
-export const { signIn, signUp, signOut, useSession, getSession } = authClient;
+export const { signIn, signUp, signOut, useSession, getSession, getLastUsedLoginMethod } = authClient;
