@@ -14,7 +14,7 @@ export const scripts = pgTable('scripts', {
         voice?: string;
         responseTime?: number;
     }>(),
-    organizationId: text('organization_id').references(() => organization.id).notNull(),
+    organizationId: text('organization_id').references(() => organization.id, { onDelete: 'restrict', onUpdate: 'cascade' }).notNull(),
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp("updated_at")
         .defaultNow()

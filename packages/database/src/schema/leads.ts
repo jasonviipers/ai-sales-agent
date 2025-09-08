@@ -10,7 +10,7 @@ export const leads = pgTable('leads', {
     phone: text('phone').notNull(),
     company: text('company'),
     customFields: jsonb('custom_fields').$type<Record<string, any>>(),
-    organizationId: text("organization_id").references(() => organization.id).notNull(),
+    organizationId: text('organization_id').references(() => organization.id, { onDelete: 'restrict', onUpdate: 'cascade' }).notNull(),
     status: text('status').$type<'new' | 'contacted' | 'interested' | 'qualified' | 'converted' | 'lost'>().default('new').notNull(),
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp("updated_at")
