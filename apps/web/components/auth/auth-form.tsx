@@ -2,11 +2,16 @@
 import { useEffect, useRef, useState, useTransition } from "react";
 import { AlertCircle, Key, Loader2 } from "lucide-react";
 import { IconRobot } from "@tabler/icons-react";
-import { signIn, getLastUsedLoginMethod } from "@/lib/auth-client";
+import { getLastUsedLoginMethod, signIn } from "@/lib/auth-client";
 import z from "zod";
 import { emailSchema } from "@/lib/validation";
 import { cn } from "@workspace/ui/lib/utils";
 import { Alert, AlertDescription } from "@workspace/ui/components/alert";
+import { Label } from "@workspace/ui/components/label";
+import { Input } from "@workspace/ui/components/input";
+import { Button } from "@workspace/ui/components/button";
+import { Badge } from "@workspace/ui/components/badge";
+import { GitHub, Google } from "../icons/icons";
 
 
 interface AuthError {

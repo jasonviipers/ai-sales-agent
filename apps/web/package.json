@@ -13,8 +13,9 @@
   "dependencies": {
     "@orpc/client": "^1.8.6",
     "@orpc/tanstack-query": "^1.8.6",
-    "@workspace/ui": "workspace:*",
+    "@tabler/icons-react": "^3.34.1",
     "@workspace/env": "workspace:*",
+    "@workspace/ui": "workspace:*",
     "lucide-react": "^0.475.0",
     "next": "^15.5.0",
     "next-themes": "^0.4.6",
@@ -22,7 +23,7 @@
     "react-dom": "^19.1.0"
   },
   "devDependencies": {
-		"@tanstack/react-query-devtools": "^5.85.6",
+    "@tanstack/react-query-devtools": "^5.85.6",
     "@workspace/eslint-config": "workspace:^",
     "@workspace/typescript-config": "workspace:*",
     "@types/node": "^22.15.3",
