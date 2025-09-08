@@ -33,7 +33,7 @@ A comprehensive AI-powered sales agent platform that automates phone calls, lear
 - **TypeScript**: Type-safe development
 - **Elysia + oRPC**: Type-safe API layer
 - **Drizzle ORM**: Database ORM with PostgreSQL
-- **NextAuth.js**: Authentication and session management
+- **Better Auth**: Authentication and session management
 
 ### Frontend
 - **Next.js 15**: Full-stack React framework with App Router

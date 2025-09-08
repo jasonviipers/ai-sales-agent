@@ -58,7 +58,9 @@ export const auth = betterAuth({
 					from: "onboarding@resend.dev",
 					to: email,
 					subject: "Sign in to your account",
+					text: `Click the link below to sign in to your account: ${url}`,
 					react: EmailTemplate({
+						variant: "vercel",
 						action: "Sign in",
 						content: "Click the link below to sign in to your account",
 						heading: "Sign in to your account",
@@ -70,4 +72,27 @@ export const auth = betterAuth({
 			}
 		})
 	],
+	user: {
+		deleteUser: {
+			enabled: true,
+			async sendDeleteAccountVerification(data) {
+				const verificationUrl = data.url;
+				await resend.emails.send({
+					from: "onboarding@resend.dev",
+					to: data.user.email,
+					subject: "Delete your account",
+					text: `Click the link below to delete your account: ${verificationUrl}`,
+					react: EmailTemplate({
+						variant: "vercel",
+						action: "Delete Account",
+						content: "Click the link below to delete your account",
+						heading: "Delete Account",
+						siteName: "AI Sales",
+						baseUrl: env.BETTER_AUTH_URL,
+						url: verificationUrl,
+					})
+				})
+			}
+		}
+	}
 });
