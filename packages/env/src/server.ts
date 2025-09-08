@@ -1,4 +1,4 @@
-import { createEnv } from "@t3-oss/env-core";
+import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
 
 export const env = createEnv({
@@ -8,8 +8,11 @@ export const env = createEnv({
             .default("development"),
         PORT: z.string().default("3000").transform(Number),
         HOST: z.string().default("0.0.0.0"),
-        CORS_ORIGIN: z.string().default("http://localhost:3001,http://localhost:3000"),
-        DATABASE_URL: z.string().url(),
+        CORS_ORIGIN: z
+            .string()
+            .default("http://localhost:3001,http://localhost:3000")
+            .transform((origins) => origins.split(",").map(origin => origin.trim())),
+        DATABASE_URL: z.url(),
         // Redis Configuration
         REDIS_URL: z.string().default("redis://localhost:6379"),
         // Auth Configuration
@@ -35,5 +38,5 @@ export const env = createEnv({
         // Model Name
         AI_MODEL_NAME: z.string(),
     },
-    runtimeEnv: process.env,
+    experimental__runtimeEnv: process.env,
 });

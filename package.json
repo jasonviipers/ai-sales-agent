@@ -10,10 +10,10 @@
     "dev:native": "turbo -F native dev",
     "dev:web": "turbo -F web dev",
     "dev:server": "turbo -F server dev",
-    "db:push": "turbo run db:push --filter=database",
-    "db:studio": "turbo run db:studio --filter=database",
-    "db:generate": "turbo run db:generate --filter=database",
-    "db:migrate": "turbo run db:migrate --filter=database"
+    "db:push": "turbo run db:push --filter=@workspace/database",
+    "db:studio": "turbo run db:studio --filter=@workspace/database",
+    "db:generate": "turbo run db:generate --filter=@workspace/database",
+    "db:migrate": "turbo run db:migrate --filter=@workspace/database"
   },
   "devDependencies": {
     "prettier": "^3.6.2",

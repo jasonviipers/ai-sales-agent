@@ -22,7 +22,7 @@ export const auth = betterAuth({
 		provider: "pg",
 		schema: schema,
 	}),
-	trustedOrigins: [env.CORS_ORIGIN],
+	trustedOrigins: env.CORS_ORIGIN,
 	secret: env.BETTER_AUTH_SECRET,
 	baseURL: env.BETTER_AUTH_URL,
 	advanced: {

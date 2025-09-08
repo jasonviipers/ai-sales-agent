@@ -5,13 +5,14 @@ import { RPCHandler } from "@orpc/server/fetch";
 import { appRouter } from "./routers";
 import { createContext } from "./lib/context";
 import { auth } from "./lib/auth";
+import { env } from "@workspace/env/server";
 
 const handler = new RPCHandler(appRouter);
 
 const app = new Elysia()
 	.use(
 		cors({
-			origin: process.env.CORS_ORIGIN || "",
+			origin: env.CORS_ORIGIN,
 			methods: ["GET", "POST", "OPTIONS"],
 			allowedHeaders: ["Content-Type", "Authorization"],
 			credentials: true,
