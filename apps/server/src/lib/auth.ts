@@ -1,5 +1,5 @@
 import { betterAuth } from "better-auth";
-import { magicLink, organization } from "better-auth/plugins";
+import { magicLink, organization, lastLoginMethod } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey"
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { EmailTemplate } from "@daveyplate/better-auth-ui/server"
@@ -45,6 +45,7 @@ export const auth = betterAuth({
 		}
 	},
 	plugins: [
+		lastLoginMethod(),
 		organization(),
 		passkey(),
 		stripe({
