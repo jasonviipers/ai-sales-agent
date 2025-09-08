@@ -6,7 +6,7 @@ import { EmailTemplate } from "@daveyplate/better-auth-ui/server"
 import * as schema from '@workspace/database/auth'
 import { db } from '@workspace/database/db'
 import { stripe } from "@better-auth/stripe"
-import { env } from "@workspace/env"
+import { env } from "@workspace/env/server"
 import { Resend } from "resend"
 import Stripe from "stripe"
 
