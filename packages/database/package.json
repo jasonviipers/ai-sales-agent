@@ -1,5 +1,5 @@
 {
-  "name": "database",
+  "name": "@workspace/database",
   "module": "index.ts",
   "type": "module",
   "private": true,
@@ -10,6 +10,8 @@
     "db:migrate": "drizzle-kit migrate"
   },
   "devDependencies": {
+    "@workspace/eslint-config": "workspace:*",
+    "@workspace/typescript-config": "workspace:*",
     "@types/pg": "^8.15.5",
     "@types/bun": "latest",
     "drizzle-kit": "^0.31.4"
@@ -23,7 +25,7 @@
   },
   "exports": {
     ".": "./src/*.ts",
-    "./schema": "./src/schema/*",
+    "./schema": "./src/schema/*.ts",
     "./auth": "./src/schema/auth.ts",
     "./migrations": "./migrations",
     "./db": "./src/index.ts"
